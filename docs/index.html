@@ -58,6 +58,19 @@ kbd { font: 12px/1 ui-monospace, monospace; padding: 3px 6px; border-radius: 4px
 
 .note { font-size: 14px; color: var(--dim); margin-top: 28px }
 .note code { font-size: 13px; background: #ffffff10; padding: 1px 5px; border-radius: 4px }
+.count { margin-top: 10px; font-size: 13px; color: var(--dim); font-variant-numeric: tabular-nums }
+
+.fb { display: grid; gap: 12px; max-width: 640px }
+.fb textarea, .fb input { font: inherit; font-size: 15px; color: var(--fg); background: var(--card); border: 1px solid #ffffff14; border-radius: 10px; padding: 12px 14px; width: 100% }
+.fb textarea { resize: vertical; min-height: 120px }
+.fb textarea:focus, .fb input:focus { outline: 2px solid var(--acc); outline-offset: -1px }
+.fb .hp { position: absolute; left: -9999px; width: 1px; height: 1px }
+.fb .row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap }
+.fb button { font: inherit; font-weight: 650; color: #fff; background: var(--acc); border: 0; border-radius: 10px; padding: 11px 22px; cursor: pointer }
+.fb button:disabled { opacity: .6; cursor: default }
+#fbmsg { font-size: 14px; color: var(--dim) }
+.intro { color: var(--dim); margin: -16px 0 24px }
+
 footer { padding: 40px 0 56px; color: var(--dim); font-size: 14px; display: flex; gap: 20px; flex-wrap: wrap }
 footer a { color: var(--dim) }
 
@@ -71,6 +84,7 @@ footer a { color: var(--dim) }
     <a href="#try">Try it</a>
     <a href="#features">Features</a>
     <a href="#keys">Shortcuts</a>
+    <a href="#feedback">Feedback</a>
     <a href="https://ko-fi.com/severin123">Support</a>
   </nav>
 
@@ -86,6 +100,7 @@ footer a { color: var(--dim) }
       <a href="https://github.com/severinschleps/refref/releases/latest/download/RefRef-windows.exe">Windows</a> ·
       <a href="https://github.com/severinschleps/refref/releases/latest/download/RefRef-linux.AppImage">Linux</a>
     </p>
+    <p class="count" id="count" hidden></p>
 
   </header>
 
@@ -130,6 +145,17 @@ footer a { color: var(--dim) }
     <p class="note">macOS: the app isn't notarized yet. On first launch, right-click RefRef → Open, or allow it in System Settings → Privacy &amp; Security. Linux: <code>chmod +x RefRef-linux.AppImage</code>, then run it.</p>
   </section>
 
+  <section id="feedback">
+    <h2>Feedback</h2>
+    <p class="intro">Found a bug, or missing something? Tell me. I read every message.</p>
+    <form class="fb" id="fb">
+      <textarea name="message" required maxlength="4000" placeholder="What should RefRef do better?" aria-label="Your feedback"></textarea>
+      <input name="email" type="email" maxlength="200" placeholder="Email (optional, only if you want a reply)" aria-label="Email (optional)">
+      <input name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <div class="row"><button>Send feedback</button><span id="fbmsg" role="status"></span></div>
+    </form>
+  </section>
+
   <footer>
     <span>RefRef</span>
     <a href="https://github.com/severinschleps/refref">GitHub</a>
@@ -147,6 +173,27 @@ const ua = navigator.userAgent
 const os = /Mac/.test(ua) ? ['RefRef-mac.dmg', 'macOS'] : /Win/.test(ua) ? ['RefRef-windows.exe', 'Windows'] : /Linux/.test(ua) && !/Android/.test(ua) ? ['RefRef-linux.AppImage', 'Linux'] : null
 const dl = document.getElementById('dl')
 if (os) { dl.href = base + os[0]; dl.querySelector('span').textContent = 'Download for ' + os[1] }
+
+// Feedback + download counter go through our Neon Function (server/api.mjs), not straight to GitHub.
+const API = 'https://br-muddy-dawn-b1azxh3t-api.compute.c-5.eu-central-1.aws.neon.tech'
+fetch(API + '/downloads').then(r => r.json()).then(({ total }) => {
+  if (total > 0) Object.assign(document.getElementById('count'), { hidden: false, textContent: `Downloaded ${total.toLocaleString('en')} times` })
+}).catch(() => {})
+
+const fb = document.getElementById('fb'), msg = document.getElementById('fbmsg')
+fb.addEventListener('submit', async e => {
+  e.preventDefault()
+  const btn = fb.querySelector('button')
+  btn.disabled = true; msg.textContent = 'Sending…'
+  try {
+    const r = await fetch(API + '/feedback', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(Object.fromEntries(new FormData(fb))) })
+    if (!r.ok) throw new Error(r.status === 429 ? 'Too many messages right now. Try again in an hour.' : 'Could not send.')
+    fb.reset(); msg.textContent = 'Thanks! Feedback sent.'
+  } catch (err) {
+    msg.textContent = (err.message.startsWith('Too') ? err.message : 'Could not send. Email hello@severinschleps.com instead.')
+  }
+  btn.disabled = false
+})
 
 </script>
 </body>

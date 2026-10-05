@@ -6,8 +6,7 @@
   "scripts": {
     "start": "electron .",
     "test": "node test.js",
-    "dist": "electron-builder",
-    "site": "node site.js"
+    "dist": "electron-builder"
   },
   "license": "ISC",
   "devDependencies": {
@@ -21,8 +20,7 @@
       "*.js",
       "*.html",
       "*.css",
-      "!test.js",
-      "!site.js"
+      "!test.js"
     ],
     "mac": {
       "target": {

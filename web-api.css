@@ -1,0 +1,10 @@
+.winctl, #grip, [data-cmd=top], [data-cmd=clear] { display: none !important }
+.wm { position: fixed; z-index: 2147483647; min-width: 200px; padding: 4px; border-radius: 8px; background: #2a2b2fee; backdrop-filter: blur(12px); box-shadow: 0 0 0 1px #ffffff1a, 0 10px 30px #0008; font: 13px/1 system-ui, sans-serif; color: #e6e6e6 }
+.wm > div { position: relative; display: flex; gap: 16px; padding: 6px 10px; border-radius: 5px; cursor: default; white-space: nowrap }
+.wm > div:hover:not(.off) { background: #4c9fff; color: #fff }
+.wm > div.off { opacity: .4 }
+.wm > div > kbd { margin-left: auto; font: inherit; opacity: .6 }
+.wm > div > .wm { display: none; position: absolute; left: 100%; top: -4px }
+.wm > div:hover > .wm { display: block }
+.wm > hr { border: 0; border-top: 1px solid #ffffff1a; margin: 4px 6px }
+.wm > hr:last-child, .wm > hr + hr { display: none }

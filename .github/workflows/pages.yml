@@ -1,4 +1,4 @@
-# Every push to master rebuilds the website (docs/ + the live app demo) and deploys it to GitHub Pages.
+# Every push to master deploys docs/ to GitHub Pages. docs/app/ symlinks to the app files; the artifact upload dereferences them.
 name: pages
 on:
   push:
@@ -15,8 +15,7 @@ jobs:
     environment: { name: github-pages, url: '${{ steps.deploy.outputs.page_url }}' }
     steps:
       - uses: actions/checkout@v4
-      - run: node site.js
       - uses: actions/upload-pages-artifact@v3
-        with: { path: _site }
+        with: { path: docs }
       - id: deploy
         uses: actions/deploy-pages@v4

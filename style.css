@@ -64,7 +64,7 @@ body.mac #wctl, body:not(.mac) #lights { display: none }
 @media (max-width: 560px) { .seg button span, .title, .kofi { display: none } .seg button { padding: 0 9px } }
 
 /* ---- board ---- */
-#stage { position: relative; flex: 1; overflow: hidden; background-image: radial-gradient(circle, rgb(255 255 255 / .075) 1px, transparent 1.4px) }
+#stage { position: relative; flex: 1; overflow: hidden; background-image: radial-gradient(circle, rgb(255 255 255 / .035) .8px, transparent 1.2px) }
 body.clear #stage { background-image: none }
 #stage.panning { cursor: grabbing }
 #world { position: absolute; left: 0; top: 0; transform-origin: 0 0 }

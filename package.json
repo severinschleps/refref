@@ -6,7 +6,8 @@
   "scripts": {
     "start": "electron .",
     "test": "node test.js",
-    "dist": "electron-builder"
+    "dist": "electron-builder",
+    "site": "node site.js"
   },
   "license": "ISC",
   "devDependencies": {
@@ -20,20 +21,28 @@
       "*.js",
       "*.html",
       "*.css",
-      "!test.js"
+      "!test.js",
+      "!site.js"
     ],
     "mac": {
-      "target": "dmg"
+      "target": {
+        "target": "dmg",
+        "arch": "universal"
+      },
+      "artifactName": "RefRef-mac.${ext}"
     },
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "artifactName": "RefRef-windows.${ext}"
     },
     "linux": {
-      "target": "AppImage"
+      "target": "AppImage",
+      "artifactName": "RefRef-linux.${ext}"
     }
   },
   "allowScripts": {
     "electron@44.5.1": true,
     "electron-winstaller@5.4.0": true
-  }
+  },
+  "repository": "github:severinschleps/refref"
 }

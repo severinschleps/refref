@@ -1,0 +1,20 @@
+:root { --bg: #1d1e21; --card: #25262a; --fg: #e6e6e6; --dim: #8b8e96; color-scheme: dark }
+* { box-sizing: border-box; margin: 0 }
+body { background: var(--bg); color: var(--fg); font: 16px/1.65 system-ui, -apple-system, sans-serif; -webkit-font-smoothing: antialiased }
+a { color: inherit; text-underline-offset: 3px }
+.wrap { max-width: 720px; margin: 0 auto; padding: 0 20px }
+nav { display: flex; align-items: center; gap: 20px; padding: 20px 0 }
+nav .logo { font-weight: 700; letter-spacing: -.02em; font-size: 18px; text-decoration: none }
+nav .sp { flex: 1 }
+nav a:not(.logo) { color: var(--dim); text-decoration: none; font-size: 14px }
+nav a:not(.logo):hover { color: var(--fg) }
+main { padding: 40px 0 24px }
+h1 { font-size: clamp(30px, 5vw, 40px); letter-spacing: -.03em; line-height: 1.1; margin-bottom: 8px }
+.sub { color: var(--dim); margin-bottom: 40px }
+h2 { font-size: 19px; letter-spacing: -.01em; margin: 36px 0 8px }
+p, ul { color: #c9cbd0; margin-bottom: 12px }
+ul { padding-left: 20px }
+li { margin-bottom: 4px }
+address { font-style: normal; background: var(--card); border-radius: 12px; padding: 18px 22px; margin: 8px 0 12px; color: var(--fg) }
+footer { padding: 40px 0 56px; color: var(--dim); font-size: 14px; display: flex; gap: 20px; flex-wrap: wrap }
+footer a { color: var(--dim) }

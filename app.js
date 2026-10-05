@@ -126,7 +126,8 @@ function ui() {
   $('#secs').value = sl.secs
   const title = $('.title')
   title.textContent = S.path ? S.path.split(/[\\/]/).pop().replace(/\.refref$/, '') : 'refref'
-  title.classList.toggle('dirty', S.dirty)
+  body.classList.toggle('dirty', S.dirty)
+  $('[data-cmd=save]').title = S.dirty ? 'Save changes · Ctrl/⌘+S' : 'Save board · Ctrl/⌘+S'
 }
 
 function setMode(m, at) {

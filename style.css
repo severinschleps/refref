@@ -32,7 +32,8 @@ body.clear #bar { border-radius: var(--r); border: 1px solid var(--line) }
 .side { display: flex; align-items: center; gap: 2px; min-width: 0 }
 .side.r { justify-content: flex-end }
 .title { padding: 0 8px; color: var(--fog); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
-.title.dirty::after { content: ''; display: inline-block; width: 6px; height: 6px; margin-left: 7px; border-radius: 50%; background: var(--safe); vertical-align: 1px }
+.side .ic { flex: none }
+body.dirty [data-cmd=save] { color: var(--safe) }
 
 button, .ic {
   font: inherit; color: var(--fog); background: none; border: 0; border-radius: 7px;

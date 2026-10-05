@@ -1,22 +1,32 @@
 const assert = require('assert')
-const { pile, grid } = require('./layout')
-const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y)
+const { pack, grid } = require('./layout')
 
-const one = pile([100])[0]
-assert(Math.abs(one.x) < 1e-9 && Math.abs(one.y) < 1e-9, 'single item sits at centre')
-
-const ring = pile([100, 100, 100, 100])
-ring.forEach((p, i) => assert(Math.abs(dist(p, ring[(i + 1) % 4]) - 85) < 1e-9, 'equal sizes: neighbours 85% apart'))
-assert(Math.abs(ring.reduce((s, p) => s + p.x + p.y, 0)) < 1e-9, 'ring centred on origin')
-assert(ring.every((p, i) => !i || p.a > ring[i - 1].a), 'angles increase')
-
-const sizes = [300, 50, 120, 80, 200], mix = pile(sizes)
-mix.forEach((p, i) => { const j = (i + 1) % 5; assert(dist(p, mix[j]) >= 0.85 * (sizes[i] + sizes[j]) / 2 - 1e-9, 'mixed sizes never overlap more than 15%') })
-
-const rects = [{ w: 200, h: 100 }, { w: 50, h: 300 }, { w: 120, h: 120 }, { w: 400, h: 80 }, { w: 90, h: 60 }]
-const g = grid(rects)
-for (let i = 0; i < g.length; i++) for (let j = i + 1; j < g.length; j++) {
-  const a = rects[i], b = rects[j]
-  assert(Math.abs(g[i].x - g[j].x) >= (a.w + b.w) / 2 || Math.abs(g[i].y - g[j].y) >= (a.h + b.h) / 2, `grid items ${i},${j} overlap`)
+const noOverlap = (rects, P, gap, what) => {
+  for (let i = 0; i < P.length; i++) for (let j = i + 1; j < P.length; j++) {
+    const a = rects[i], b = rects[j]
+    assert(Math.abs(P[i].x - P[j].x) >= (a.w + b.w) / 2 + gap - 1e-6 || Math.abs(P[i].y - P[j].y) >= (a.h + b.h) / 2 + gap - 1e-6, `${what}: items ${i},${j} overlap`)
+  }
 }
+
+// deterministic pseudo-random rects
+let seed = 7
+const rnd = () => (seed = seed * 16807 % 2147483647) / 2147483647
+const rects = Array.from({ length: 30 }, () => ({ w: 80 + rnd() * 320, h: 80 + rnd() * 320 }))
+  .sort((a, b) => b.w * b.h - a.w * a.h)
+
+for (const aspect of [1, 16 / 9, 0.6]) {
+  const gap = 12, P = pack(rects, gap, aspect)
+  assert.deepStrictEqual(P[0], { x: 0, y: 0 }, 'first item at centre')
+  noOverlap(rects, P, gap, `pack aspect ${aspect}`)
+  const x0 = Math.min(...P.map((p, i) => p.x - rects[i].w / 2)), x1 = Math.max(...P.map((p, i) => p.x + rects[i].w / 2))
+  const y0 = Math.min(...P.map((p, i) => p.y - rects[i].h / 2)), y1 = Math.max(...P.map((p, i) => p.y + rects[i].h / 2))
+  const fill = rects.reduce((s, r) => s + r.w * r.h, 0) / ((x1 - x0) * (y1 - y0))
+  assert(fill > 0.6, `pack aspect ${aspect}: too loose, fill ${fill.toFixed(2)}`)
+  const shape = (x1 - x0) / (y1 - y0)
+  assert(shape / aspect > 0.6 && shape / aspect < 1.7, `pack aspect ${aspect}: shape ${shape.toFixed(2)} ignores view`)
+  console.log(`pack aspect ${aspect.toFixed(2)}: fill ${fill.toFixed(2)}, shape ${shape.toFixed(2)}`)
+}
+
+const g = grid(rects)
+noOverlap(rects, g, 0, 'grid')
 console.log('ok')

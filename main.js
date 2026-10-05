@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, dialog, Menu, clipboard, nativeImage } = require('electron')
+const { app, BrowserWindow, ipcMain, dialog, Menu, clipboard, nativeImage, shell } = require('electron')
 const fs = require('fs'), path = require('path'), { fileURLToPath } = require('url')
 
 const MIME = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', gif: 'image/gif', webp: 'image/webp', bmp: 'image/bmp', svg: 'image/svg+xml', avif: 'image/avif' }
@@ -15,6 +15,8 @@ app.whenReady().then(() => {
     webPreferences: { preload: path.join(__dirname, 'preload.js') },
   })
   win.setAlwaysOnTop(true, 'floating')
+  // Links with target=_blank (the Ko-fi button) open in the system browser, never in-app.
+  win.webContents.setWindowOpenHandler(({ url }) => { if (url.startsWith('https:')) shell.openExternal(url); return { action: 'deny' } })
   win.loadFile(path.join(__dirname, 'index.html'))
   win.on('close', e => {
     if (dirty && dialog.showMessageBoxSync(win, { type: 'question', buttons: ['Cancel', 'Discard'], message: 'Discard unsaved changes to this board?' }) === 0) e.preventDefault()
@@ -53,7 +55,7 @@ on('open', async () => {
 })
 on('addImages', async () => {
   const { filePaths } = await dialog.showOpenDialog(win, { properties: ['openFile', 'multiSelections'], filters: [{ name: 'Images', extensions: Object.keys(MIME) }] })
-  return filePaths.map(dataURL)
+  return filePaths.map(p => ({ src: dataURL(p), name: path.basename(p) }))
 })
 // Main-process fetch: no CORS, so images dragged from any website work.
 on('fetchImage', async url => {
@@ -68,5 +70,20 @@ on('paste', () => {
   if (fromFile) return fromFile
   const img = clipboard.readImage()
   return img.isEmpty() ? clipboard.readText().trim() : img.toDataURL()
+})
+// Drag images out of the board: write them to temp files and hand them to the OS drag session.
+ipcMain.on('dragOut', (e, items) => {
+  const dir = path.join(app.getPath('temp'), 'refref')
+  fs.mkdirSync(dir, { recursive: true })
+  const files = items.map(({ src, name }, k) => {
+    const i = src.indexOf(','), head = src.slice(5, i)
+    if (!head.endsWith(';base64')) return null
+    const type = head.split(';')[0].split('/')[1], ext = { jpeg: 'jpg', 'svg+xml': 'svg' }[type] || type
+    const base = name ? path.parse(name).name.replace(/[^\w.-]+/g, '_') : `refref-${Date.now()}`
+    const file = path.join(dir, `${base}${items.length > 1 ? '-' + (k + 1) : ''}.${ext}`)
+    fs.writeFileSync(file, Buffer.from(src.slice(i + 1), 'base64'))
+    return file
+  }).filter(Boolean)
+  if (files.length) e.sender.startDrag({ file: files[0], files, icon: nativeImage.createFromDataURL(items[0].thumb) })
 })
 on('copy', url => clipboard.writeImage(nativeImage.createFromDataURL(url)))

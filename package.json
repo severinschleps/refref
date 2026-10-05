@@ -16,9 +16,24 @@
   "build": {
     "appId": "dev.sev.refref",
     "productName": "RefRef",
-    "files": ["*.js", "*.html", "*.css", "!test.js"],
-    "mac": { "target": "dmg" },
-    "win": { "target": "nsis" },
-    "linux": { "target": "AppImage" }
+    "files": [
+      "*.js",
+      "*.html",
+      "*.css",
+      "!test.js"
+    ],
+    "mac": {
+      "target": "dmg"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
+  },
+  "allowScripts": {
+    "electron@44.5.1": true,
+    "electron-winstaller@5.4.0": true
   }
 }

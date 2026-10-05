@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob:">
+<title>RefRef</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-mode="free">
+<header id="bar">
+  <span class="title">refref</span>
+  <div class="seg">
+    <button data-cmd="mode:free" title="Freeform (1)">Free</button>
+    <button data-cmd="mode:pile" title="Pile (2)">Pile</button>
+    <button data-cmd="mode:slides" title="Slideshow (3)">Slides</button>
+  </div>
+  <div id="sctl">
+    <button data-cmd="auto" title="Auto-advance (A)">Auto</button>
+    <select id="secs" title="Time per image"></select>
+    <button data-cmd="pause" title="Pause (Space)">❚❚</button>
+    <button data-cmd="shuffle" title="Shuffle">Shuffle</button>
+    <span id="count"></span>
+  </div>
+  <span class="sp"></span>
+  <button data-cmd="clear" title="Transparent backdrop (T)"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.5"/><path d="M8 2.5a5.5 5.5 0 0 1 0 11z" fill="currentColor"/></svg></button>
+  <button data-cmd="top" title="Always on top (P)"><svg viewBox="0 0 16 16"><path d="M6 2.5h4M7 2.5 6.5 7 4 9.5h8L9.5 7 9 2.5M8 9.5V14"/></svg></button>
+  <button data-cmd="min" title="Minimize"><svg viewBox="0 0 16 16"><path d="M4 8.5h8"/></svg></button>
+  <button data-cmd="close" id="close" title="Close"><svg viewBox="0 0 16 16"><path d="m4.5 4.5 7 7m0-7-7 7"/></svg></button>
+</header>
+<main id="stage">
+  <div id="world"><div id="handle"></div></div>
+  <div id="box"></div>
+  <p id="empty">Drop images here<br><small>paste with Ctrl/⌘+V · right-click for everything else</small></p>
+</main>
+<section id="slide">
+  <img alt="">
+  <div class="zone l"></div><div class="zone r"></div>
+  <div id="timer"><i></i></div><span id="time"></span>
+</section>
+<div id="grip" title="Resize window"></div>
+<script src="layout.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

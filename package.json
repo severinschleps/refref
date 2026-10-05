@@ -1,0 +1,24 @@
+{
+  "name": "refref",
+  "version": "0.1.0",
+  "description": "Always-on-top reference board: freeform, circular pile and quickdraw slideshow views",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "node test.js",
+    "dist": "electron-builder"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^44.5.1",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "dev.sev.refref",
+    "productName": "RefRef",
+    "files": ["*.js", "*.html", "*.css", "!test.js"],
+    "mac": { "target": "dmg" },
+    "win": { "target": "nsis" },
+    "linux": { "target": "AppImage" }
+  }
+}
